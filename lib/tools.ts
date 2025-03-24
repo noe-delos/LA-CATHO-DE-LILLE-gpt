@@ -50,7 +50,7 @@ export const searchAlumniTool = tool({
       }
 
       // Construire la requête
-      let query = supabase.from('emlyon').select(columnsToSelect);
+      let query = supabase.from('catho').select(columnsToSelect);
 
       // Appliquer les filtres standards
       if (first_name) query = query.ilike('first_name', `%${first_name}%`);
@@ -133,7 +133,7 @@ export const getRandomAlumniTool = tool({
 
       // Construire la requête
       const { data, error } = await supabase
-        .from('emlyon')
+        .from('catho')
         .select(columnsToSelect)
         .order('id', { ascending: false })  // Une façon de pseudo-randomiser
         .limit(count);
