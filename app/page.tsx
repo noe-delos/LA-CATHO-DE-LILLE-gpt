@@ -1,18 +1,27 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
+"use client";
 
-import { AlumniTable, AlumniTableSkeleton } from '@/components/AlumniTable';
-import ShimmeringTitle from '@/components/ui/animated-text';
-import { AuroraText } from '@/components/ui/aurora-text';
-import { Alumni } from '@/lib/supabase';
-import { useChat } from '@ai-sdk/react';
+import { AlumniTable, AlumniTableSkeleton } from "@/components/AlumniTable";
+import ShimmeringTitle from "@/components/ui/animated-text";
+import { AuroraText } from "@/components/ui/aurora-text";
+import { Alumni } from "@/lib/supabase";
+import { useChat } from "@ai-sdk/react";
 import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "framer-motion";
 import "katex/dist/katex.min.css";
-import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, FormEvent, KeyboardEvent, memo, ReactNode, useEffect, useRef, useState } from 'react';
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  memo,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { PopupModal } from "react-calendly";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -26,14 +35,19 @@ interface SuggestionButtonProps {
   color?: string;
 }
 
-const SuggestionButton: React.FC<SuggestionButtonProps> = ({ text, icon, color, onClick }) => (
+const SuggestionButton: React.FC<SuggestionButtonProps> = ({
+  text,
+  icon,
+  color,
+  onClick,
+}) => (
   <motion.button
     whileHover={{ scale: 1.03 }}
     whileTap={{ scale: 0.97 }}
     className="px-4 py-2 rounded-full bg-[#012955]/20 text-[#012955] hover:bg-[#012955]/10 text-sm flex items-center gap-2"
     onClick={onClick}
   >
-    <Icon icon={icon} color={color} className='size-3 opacity-70' />
+    <Icon icon={icon} color={color} className="size-3 opacity-70" />
     {text}
   </motion.button>
 );
@@ -43,7 +57,10 @@ interface SendButtonProps {
   type?: "submit" | "button" | "reset";
 }
 
-const SendButton: React.FC<SendButtonProps> = ({ disabled, type = "submit" }) => (
+const SendButton: React.FC<SendButtonProps> = ({
+  disabled,
+  type = "submit",
+}) => (
   <motion.button
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
@@ -86,16 +103,26 @@ const MarkdownContent = memo(({ content }: MarkdownContentProps) => (
         </div>
       ),
       thead: ({ children }) => <thead>{children}</thead>,
-      th: ({ children }) => <th className="px-4 py-2 bg-zinc-50 text-zinc-800">{children}</th>,
-      td: ({ children }) => <td className="px-4 py-2 text-zinc-700">{children}</td>,
+      th: ({ children }) => (
+        <th className="px-4 py-2 bg-zinc-50 text-zinc-800">{children}</th>
+      ),
+      td: ({ children }) => (
+        <td className="px-4 py-2 text-zinc-700">{children}</td>
+      ),
       tr: ({ children }) => <tr>{children}</tr>,
-      pre: ({ children }) => <pre className="bg-zinc-50 rounded-lg p-4 overflow-x-auto">{children}</pre>,
+      pre: ({ children }) => (
+        <pre className="bg-zinc-50 rounded-lg p-4 overflow-x-auto">
+          {children}
+        </pre>
+      ),
       code: ({ children, className }) => {
         const match = /language-(\w+)/.exec(className || "");
         return match ? (
           <code className={className}>{children}</code>
         ) : (
-          <code className="bg-zinc-50 text-zinc-800 px-1 py-0.5 rounded text-sm">{children}</code>
+          <code className="bg-zinc-50 text-zinc-800 px-1 py-0.5 rounded text-sm">
+            {children}
+          </code>
         );
       },
     }}
@@ -114,7 +141,7 @@ interface SuggestionItem {
 }
 
 interface ToolInvocationPart {
-  type: 'tool-invocation';
+  type: "tool-invocation";
   toolInvocation: {
     toolName: string;
     toolCallId: string;
@@ -125,13 +152,21 @@ interface ToolInvocationPart {
 }
 
 export default function Page() {
-  const { messages, input, handleInputChange, handleSubmit, stop, reload, status } = useChat({
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    stop,
+    reload,
+    status,
+  } = useChat({
     maxSteps: 5, // Allows multiple tool invocation steps
   });
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isAdmin = searchParams.get('admin_access') === 'true';
+  const isAdmin = searchParams.get("admin_access") === "true";
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -143,7 +178,7 @@ export default function Page() {
   const [showCalendly, setShowCalendly] = useState(false);
   const [isClientSide, setIsClientSide] = useState(false);
 
-  console.log(isAtBottom)
+  console.log(isAtBottom);
   // Initialize message count from localStorage on component mount
   useEffect(() => {
     setIsClientSide(true);
@@ -154,7 +189,9 @@ export default function Page() {
     e.preventDefault();
 
     // Get current message count from localStorage - using userMessageCountuniv-catho as the key
-    const currentCount = parseInt(localStorage.getItem('userMessageCountuniv-catho') || '0');
+    const currentCount = parseInt(
+      localStorage.getItem("userMessageCountuniv-catho") || "0"
+    );
 
     // Check if user is attempting to send a second message and is not an admin
     if (currentCount >= 1 && !isAdmin) {
@@ -167,11 +204,11 @@ export default function Page() {
 
     // Update message count in localStorage
     const newCount = currentCount + 1;
-    localStorage.setItem('userMessageCountuniv-catho', newCount.toString());
+    localStorage.setItem("userMessageCountuniv-catho", newCount.toString());
 
     // Reset textarea height
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
     }
 
     // Ensure we scroll to bottom after submitting
@@ -184,59 +221,61 @@ export default function Page() {
   // Suggestion button data with icons
   const suggestionData: SuggestionItem[] = [
     {
-      text: "Alumni chez BCG",
+      text: "Alumni en M&A",
       icon: "ic:baseline-business-center",
-      query: "Trouve des alumni qui travaillent chez Boston Consulting Group (BCG)",
-      color: '#0b48c2'
+      query:
+        "Trouve des alumni qui travaillent dans le M&A (Mergers & Acquisitions)",
+      color: "#0b48c2",
     },
     {
-      text: "Promotion 2022",
-      icon: "mdi:school",
-      query: "Montre-moi les alumni de la promotion 2022",
-      color: '#4f3103'
+      text: "Alumni Avocats",
+      icon: "mdi:gavel",
+      query: "Montre-moi les alumni qui sont avocats ou juristes",
+      color: "#4f3103",
     },
     {
-      text: "Consultants à Paris",
+      text: "Alumni en Finance",
+      icon: "mdi:chart-line",
+      query: "Cherche des alumni qui travaillent dans la finance",
+      color: "#27adf4",
+    },
+    {
+      text: "Alumni à Paris",
       icon: "mdi:eiffel-tower",
-      query: "Cherche des consultants basés à Paris",
-      color: '#27adf4'
+      query: "Qui travaille à Paris?",
+      color: "#000000",
     },
     {
-      text: "Alumni chez Roland Berger",
-      icon: "mdi:briefcase",
-      query: "Qui travaille chez Roland Berger?",
-      color: '#000000'
-    },
-    {
-      text: "Senior Consultants",
+      text: "Alumni en Consulting",
       icon: "carbon:user-admin",
-      query: "Liste des alumni qui sont Senior Consultants",
-      color: '#3db800'
+      query: "Liste des alumni qui travaillent dans le conseil",
+      color: "#3db800",
     },
     {
-      text: "McKinsey & Company",
-      icon: "fluent:building-20-filled",
-      query: "Trouve des alumni qui travaillent chez McKinsey & Company",
-      color: '#ec5a00'
+      text: "Alumni en Tech",
+      icon: "fluent:desktop-20-filled",
+      query: "Trouve des alumni qui travaillent dans la tech",
+      color: "#ec5a00",
     },
     {
       text: "Alumni à l'international",
       icon: "bxs:plane-alt",
-      query: "Cherche des alumni qui travaillent à l'international",
-      color: '#008b74'
+      query: "Cherche des alumni qui travaillent à l'étranger",
+      color: "#008b74",
     },
     {
-      text: "Dernière promotion (2024)",
-      icon: "ph:graduation-cap-fill",
-      query: "Montre-moi les alumni de la promotion 2024",
-      color: '#9c0000'
-    }
+      text: "Alumni Entrepreneurs",
+      icon: "ph:rocket-launch-fill",
+      query: "Montre-moi les alumni qui ont créé leur entreprise",
+      color: "#9c0000",
+    },
   ];
 
   // Check if user is at bottom of messages
   const checkIfAtBottom = () => {
     if (messagesContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } =
+        messagesContainerRef.current;
       const tolerance = 100; // pixels of tolerance
       const atBottom = scrollTop + clientHeight >= scrollHeight - tolerance;
       setIsAtBottom(atBottom);
@@ -247,8 +286,8 @@ export default function Page() {
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', checkIfAtBottom);
-      return () => container.removeEventListener('scroll', checkIfAtBottom);
+      container.addEventListener("scroll", checkIfAtBottom);
+      return () => container.removeEventListener("scroll", checkIfAtBottom);
     }
   }, []);
 
@@ -256,14 +295,14 @@ export default function Page() {
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     handleInputChange(e);
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
   // Handle Enter key (submit on Enter, new line on Shift+Enter)
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (formRef.current) {
         formRef.current.requestSubmit();
@@ -275,7 +314,9 @@ export default function Page() {
   const handleSuggestion = (suggestion: string) => {
     if (textareaRef.current) {
       textareaRef.current.value = suggestion;
-      const event = { target: textareaRef.current } as ChangeEvent<HTMLTextAreaElement>;
+      const event = {
+        target: textareaRef.current,
+      } as ChangeEvent<HTMLTextAreaElement>;
       handleInputChange(event);
 
       // Submit the form after setting the input value
@@ -295,16 +336,27 @@ export default function Page() {
   const hasMessages = messages.length > 0;
 
   // Render tool results
-  const renderToolResult = (part: ToolInvocationPart, idx: number, toolCallId: string): ReactNode => {
+  const renderToolResult = (
+    part: ToolInvocationPart,
+    idx: number,
+    toolCallId: string
+  ): ReactNode => {
     const { toolName, state, args, result } = part.toolInvocation;
 
-    if ((toolName === 'searchAlumni' || toolName === 'getRandomAlumni') && state === 'result' && result) {
-      let title = toolName === 'getRandomAlumni' ? "Alumnis aléatoires" : "Résultats de recherche";
+    if (
+      (toolName === "searchAlumni" || toolName === "getRandomAlumni") &&
+      state === "result" &&
+      result
+    ) {
+      let title =
+        toolName === "getRandomAlumni"
+          ? "Alumnis aléatoires"
+          : "Résultats de recherche";
 
       // Prepare table title for searchAlumni
-      if (toolName === 'searchAlumni') {
+      if (toolName === "searchAlumni") {
         try {
-          const parsedArgs = typeof args === 'string' ? JSON.parse(args) : args;
+          const parsedArgs = typeof args === "string" ? JSON.parse(args) : args;
           const { city, industry, graduation_year } = parsedArgs;
 
           if (city || industry || graduation_year) {
@@ -314,15 +366,24 @@ export default function Page() {
             if (graduation_year) title += ` de la promo ${graduation_year}`;
           }
         } catch (e) {
-          console.error(e)
+          console.error(e);
           // Keep default title if parsing error
         }
       }
 
-      return <AlumniTable key={`${toolCallId}-${idx}`} alumni={result as Partial<Alumni>[]} title={title} />;
+      return (
+        <AlumniTable
+          key={`${toolCallId}-${idx}`}
+          alumni={result as Partial<Alumni>[]}
+          title={title}
+        />
+      );
     }
 
-    if ((toolName === 'searchAlumni' || toolName === 'getRandomAlumni') && (state === 'call' || state === 'partial-call')) {
+    if (
+      (toolName === "searchAlumni" || toolName === "getRandomAlumni") &&
+      (state === "call" || state === "partial-call")
+    ) {
       return <AlumniTableSkeleton key={`${toolCallId}-${idx}`} />;
     }
 
@@ -345,8 +406,17 @@ export default function Page() {
       <div className="w-full relative">
         <div className="max-w-5xl mx-auto px-4 py-3">
           {/* Logo and title */}
-          <div className="flex items-center space-x-3 fixed top-3 left-4 z-10 cursor-pointer" onClick={() => router.push('/')}>
-            <Image src='/logo.png' alt='logo' width={100} height={100} className='size-[1.5rem] sm:h-[3.5rem] w-full' />
+          <div
+            className="flex items-center space-x-3 fixed top-3 left-4 z-10 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={100}
+              height={100}
+              className="size-[1.5rem] sm:h-[3.5rem] w-full"
+            />
           </div>
         </div>
       </div>
@@ -358,31 +428,33 @@ export default function Page() {
             {!hasMessages ? (
               // Welcome screen with suggestions
               <div className="py-20 text-center max-w-4xl mx-auto">
-                <div className='flex flex-col sm:flex-row items-center size-fit gap-4 mx-auto h-fit mb-14'>
+                <div className="flex flex-col sm:flex-row items-center size-fit gap-4 mx-auto h-fit mb-14">
                   <video
-                    src='/justine.mp4'
+                    src="/justine.mp4"
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className='h-auto w-24 rounded-full object-cover block sm:hidden'
+                    className="h-auto w-24 rounded-full object-cover block sm:hidden"
                   />
                   <motion.h2
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-3xl font-medium text-zinc-800"
                   >
-                    <AuroraText className='text-3xl'>Justine</AuroraText>, l'assistante alumni de l'université catholique.
+                    <AuroraText className="text-3xl">Justine</AuroraText>,
+                    l'assistante alumni de l'université catholique.
                   </motion.h2>
                   <video
-                    src='/justine.mp4'
+                    src="/justine.mp4"
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className='h-auto w-24 rounded-full object-cover hidden sm:block'
+                    className="h-auto w-24 rounded-full object-cover hidden sm:block"
                   />
-                </div>                {/* Suggestion buttons - first row */}
+                </div>{" "}
+                {/* Suggestion buttons - first row */}
                 <div className="flex flex-wrap gap-2 justify-center mb-4">
                   {suggestionData.slice(3, 6).map((suggestion, index) => (
                     <SuggestionButton
@@ -394,7 +466,6 @@ export default function Page() {
                     />
                   ))}
                 </div>
-
                 {/* Suggestion buttons - second row */}
                 <div className="flex flex-wrap gap-2 justify-center mb-16">
                   {suggestionData.slice(0, 3).map((suggestion, index) => (
@@ -407,7 +478,6 @@ export default function Page() {
                     />
                   ))}
                 </div>
-
                 {/* Initial input form */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -415,7 +485,11 @@ export default function Page() {
                   transition={{ delay: 0.3 }}
                   className="max-w-3xl mx-auto"
                 >
-                  <form ref={formRef} onSubmit={customSubmit} className="relative">
+                  <form
+                    ref={formRef}
+                    onSubmit={customSubmit}
+                    className="relative"
+                  >
                     <textarea
                       ref={textareaRef}
                       value={input}
@@ -427,11 +501,17 @@ export default function Page() {
                     />
                     {/* Permanent Alumni badge */}
                     <div className="absolute left-3 bottom-4 bg-[#012955]/20 text-[#012955] rounded-full px-3 py-1 flex items-center gap-2 text-sm pointer-events-none">
-                      <Image src='/logo-small.png' alt='logo' width={18} height={18} className='' />
+                      <Image
+                        src="/logo-small.png"
+                        alt="logo"
+                        width={18}
+                        height={18}
+                        className=""
+                      />
                       alumnis
                     </div>
                     <div className="absolute right-3 bottom-4">
-                      {(status === "submitted" || status === "streaming") ? (
+                      {status === "submitted" || status === "streaming" ? (
                         <StopButton onClick={stop} />
                       ) : (
                         <SendButton disabled={!input.trim()} />
@@ -445,26 +525,31 @@ export default function Page() {
               <AnimatePresence>
                 <div className="space-y-6 py-4 pb-20">
                   {messages.map((message: any, index: number) => {
-                    const isUser = message.role === 'user';
+                    const isUser = message.role === "user";
                     const parts = message.parts || [];
-                    console.log('status = ', status, message.parts)
+                    console.log("status = ", status, message.parts);
                     return (
                       <motion.div
                         key={message.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
-                        onMouseEnter={() => !isUser && setHoveringMessage(message.id)}
+                        className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                        onMouseEnter={() =>
+                          !isUser && setHoveringMessage(message.id)
+                        }
                         onMouseLeave={() => !isUser && setHoveringMessage(null)}
                       >
                         <div
-                          className={`rounded-full px-4 py-3 text-black max-w-4xl font-light ${isUser ? 'bg-zinc-100' : ''}`}
+                          className={`rounded-full px-4 py-3 text-black max-w-4xl font-light ${isUser ? "bg-zinc-100" : ""}`}
                         >
                           {isUser ? (
                             <div className="text-md">{message.content}</div>
-                          ) : status === "submitted" && index === messages.length - 1 ? (
+                          ) : status === "submitted" &&
+                            index === messages.length - 1 ? (
                             <div className="flex items-start gap-3">
-                              <ShimmeringTitle className='text-black font-thin'>Chargement</ShimmeringTitle>
+                              <ShimmeringTitle className="text-black font-thin">
+                                Chargement
+                              </ShimmeringTitle>
                             </div>
                           ) : (
                             <div className="flex items-start gap-3">
@@ -475,22 +560,32 @@ export default function Page() {
                                 height={40}
                                 className="rounded-full object-cover mt-2"
                               />
-                              <div className='ml-1'>
+                              <div className="ml-1">
                                 <MarkdownContent content={message.content} />
                                 <div
-                                  className={`flex mt-2 space-x-4 opacity-0 transition-opacity duration-200 ${hoveringMessage === message.id ? 'opacity-100' : ''}`}
+                                  className={`flex mt-2 space-x-4 opacity-0 transition-opacity duration-200 ${hoveringMessage === message.id ? "opacity-100" : ""}`}
                                 >
                                   <button
                                     onClick={() => reload(message.id)}
                                     className="text-zinc-500 hover:text-zinc-800"
                                   >
-                                    <Icon icon="lucide:refresh-cw" width={16} height={16} />
+                                    <Icon
+                                      icon="lucide:refresh-cw"
+                                      width={16}
+                                      height={16}
+                                    />
                                   </button>
                                   <button
-                                    onClick={() => copyToClipboard(message.content)}
+                                    onClick={() =>
+                                      copyToClipboard(message.content)
+                                    }
                                     className="text-zinc-500 hover:text-zinc-800"
                                   >
-                                    <Icon icon="lucide:clipboard-copy" width={16} height={16} />
+                                    <Icon
+                                      icon="lucide:clipboard-copy"
+                                      width={16}
+                                      height={16}
+                                    />
                                   </button>
                                 </div>
                               </div>
@@ -499,8 +594,12 @@ export default function Page() {
 
                           {/* Render tool invocations */}
                           {parts.map((part: any, idx: number) => {
-                            if (part.type === 'tool-invocation') {
-                              return renderToolResult(part, idx, part.toolInvocation.toolCallId);
+                            if (part.type === "tool-invocation") {
+                              return renderToolResult(
+                                part,
+                                idx,
+                                part.toolInvocation.toolCallId
+                              );
                             }
                             return null;
                           })}
@@ -525,7 +624,11 @@ export default function Page() {
           >
             <div className="max-w-5xl mx-auto px-4 py-4">
               <div className="max-w-3xl mx-auto relative mb-5">
-                <form ref={formRef} onSubmit={customSubmit} className="relative">
+                <form
+                  ref={formRef}
+                  onSubmit={customSubmit}
+                  className="relative"
+                >
                   <textarea
                     ref={textareaRef}
                     value={input}
@@ -537,11 +640,17 @@ export default function Page() {
                   />
                   {/* Permanent Alumni badge */}
                   <div className="absolute left-3 bottom-4 bg-[#012955]/20 text-[#012955] rounded-full px-3 py-1 flex items-center gap-2 text-sm pointer-events-none">
-                    <Image src='/logo-small.png' alt='logo' width={18} height={18} className='rounded-full' />
+                    <Image
+                      src="/logo-small.png"
+                      alt="logo"
+                      width={18}
+                      height={18}
+                      className="rounded-full"
+                    />
                     alumnis
                   </div>
                   <div className="absolute right-3 bottom-4">
-                    {(status === "submitted" || status === "streaming") ? (
+                    {status === "submitted" || status === "streaming" ? (
                       <StopButton onClick={stop} />
                     ) : (
                       <SendButton disabled={!input.trim()} />
@@ -553,7 +662,12 @@ export default function Page() {
           </motion.div>
         )}
       </div>
-      <p className='text-zinc-400 font-light fixed bottom-0 mb-4 left-[45%] text-xs'>contact: <a href='mailto:paul@ks-entreprise.com' className=''>paul@ks-entreprise.com</a></p>
+      <p className="text-zinc-400 font-light fixed bottom-0 mb-4 left-[45%] text-xs">
+        contact:{" "}
+        <a href="mailto:paul@ks-entreprise.com" className="">
+          paul@ks-entreprise.com
+        </a>
+      </p>
     </div>
   );
 }
