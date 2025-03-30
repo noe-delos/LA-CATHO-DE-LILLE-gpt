@@ -223,8 +223,7 @@ export default function Page() {
     {
       text: "Alumni en M&A",
       icon: "ic:baseline-business-center",
-      query:
-        "Trouve des alumni qui travaillent dans le M&A (Mergers & Acquisitions)",
+      query: "alumnis en m&a",
       color: "#0b48c2",
     },
     {
@@ -244,30 +243,6 @@ export default function Page() {
       icon: "mdi:eiffel-tower",
       query: "Qui travaille à Paris?",
       color: "#000000",
-    },
-    {
-      text: "Alumni en Consulting",
-      icon: "carbon:user-admin",
-      query: "Liste des alumni qui travaillent dans le conseil",
-      color: "#3db800",
-    },
-    {
-      text: "Alumni en Tech",
-      icon: "fluent:desktop-20-filled",
-      query: "Trouve des alumni qui travaillent dans la tech",
-      color: "#ec5a00",
-    },
-    {
-      text: "Alumni à l'international",
-      icon: "bxs:plane-alt",
-      query: "Cherche des alumni qui travaillent à l'étranger",
-      color: "#008b74",
-    },
-    {
-      text: "Alumni Entrepreneurs",
-      icon: "ph:rocket-launch-fill",
-      query: "Montre-moi les alumni qui ont créé leur entreprise",
-      color: "#9c0000",
     },
   ];
 
